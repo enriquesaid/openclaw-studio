@@ -41,7 +41,7 @@ import {
   readConfigAgentList,
   slugifyAgentName,
 } from "@/lib/gateway/agentConfig";
-import { buildAvatarDataUrl } from "@/lib/avatars/multiavatar";
+import { buildAvatarDataUrl } from "@/lib/avatars/dicebear";
 import { createStudioSettingsCoordinator } from "@/lib/studio/coordinator";
 import { applySessionSettingMutation } from "@/features/agents/state/sessionSettingsMutations";
 import type { AgentCreateModalSubmitPayload } from "@/features/agents/creation/types";
@@ -1651,13 +1651,13 @@ const AgentStudioPage = () => {
               </div>
             </div>
           ) : (
-            <div className="relative flex min-h-0 flex-1 flex-col gap-4 overflow-hidden xl:flex-row xl:overflow-visible">
+            <div className="ui-panel ui-depth-workspace relative flex min-h-0 flex-1 flex-col overflow-hidden xl:flex-row xl:overflow-visible">
               <div
                 className={`${
                   mobilePane === "fleet"
                       ? "translate-x-0 opacity-100"
                       : "-translate-x-full opacity-0 pointer-events-none"
-                } absolute inset-0 z-30 min-h-0 bg-background transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] xl:pointer-events-auto xl:static xl:block xl:translate-x-0 xl:bg-transparent xl:opacity-100 xl:min-h-0`}
+                } absolute inset-0 z-30 min-h-0 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] xl:pointer-events-auto xl:static xl:block xl:translate-x-0 xl:opacity-100 xl:min-h-0 xl:w-72 xl:flex-none xl:border-r xl:border-border/40`}
               >
                 <FleetSidebar
                   agents={filteredAgents}
@@ -1673,7 +1673,7 @@ const AgentStudioPage = () => {
                 />
               </div>
               <div
-                className="flex ui-panel ui-depth-workspace min-h-0 flex-1 overflow-hidden"
+                className="flex min-h-0 flex-1 overflow-hidden"
                 data-testid="focused-agent-panel"
               >
                 {focusedAgent ? (

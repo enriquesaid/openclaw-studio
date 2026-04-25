@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { useMemo } from "react";
 
-import { buildAvatarDataUrl } from "@/lib/avatars/multiavatar";
+import { buildAvatarDataUrl } from "@/lib/avatars/dicebear";
 
 type AgentAvatarProps = {
   seed: string;

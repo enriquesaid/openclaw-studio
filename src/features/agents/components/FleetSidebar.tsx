@@ -102,7 +102,7 @@ export const FleetSidebar = ({
 
   return (
     <aside
-      className="fade-up-delay relative flex h-full w-full min-w-72 flex-col bg-background xl:max-w-[320px] xl:border-r xl:border-border"
+      className="fade-up-delay relative flex h-full w-full min-w-72 flex-col bg-background xl:max-w-[320px] xl:bg-transparent"
       data-testid="fleet-sidebar"
     >
       <div className="flex flex-col gap-6 p-6 pb-0">
@@ -161,7 +161,7 @@ export const FleetSidebar = ({
                   data-testid={`fleet-agent-row-${agent.agentId}`}
                   className={`group relative flex w-full items-center gap-4 border-b border-border px-6 py-5 text-left transition-all ${
                     selected
-                      ? "bg-white z-10"
+                      ? "bg-surface-2 z-10"
                       : "hover:bg-surface-2"
                   }`}
                   onClick={() => onSelectAgent(agent.agentId)}
