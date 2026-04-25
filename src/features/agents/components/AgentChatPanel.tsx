@@ -1053,7 +1053,7 @@ const AgentChatComposer = memo(function AgentChatComposer({
   }, [thinkingValue]);
   const thinkingSelectWidthCh = Math.max(9, Math.min(16, thinkingSelectedLabel.length + 6));
   return (
-    <div className="w-full max-w-full overflow-hidden rounded-2xl border border-border/40 bg-white px-3 py-2 shadow-sm">
+    <div className="w-full max-w-full overflow-hidden rounded-2xl border border-border/40 bg-card px-3 py-2 shadow-sm">
       {queuedMessages.length > 0 ? (
         <div
           className={`mb-2 grid items-start gap-2 ${
@@ -1602,8 +1602,8 @@ export const AgentChatPanel = ({
   const newSessionDisabled = newSessionBusy || !canSend || !onNewSession;
 
   return (
-    <div data-agent-panel className="group fade-up relative flex h-full w-full min-w-0 flex-col overflow-hidden bg-[#fafaf9]">
-      <header className="sticky top-0 z-30 border-b border-border/40 bg-[#fafaf9]/80 px-5 py-2.5 backdrop-blur-xl sm:px-6 sm:py-3">
+    <div data-agent-panel className="group fade-up relative flex h-full w-full min-w-0 flex-col overflow-hidden bg-background">
+      <header className="sticky top-0 z-30 border-b border-border/40 bg-background/80 px-5 py-2.5 backdrop-blur-xl sm:px-6 sm:py-3">
         <div className="flex items-center justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3 sm:gap-4">
             {onBackToFleet ? (
@@ -1625,7 +1625,7 @@ export const AgentChatPanel = ({
                 isSelected={isSelected}
               />
               <button
-                className="absolute -bottom-0.5 -right-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full border border-border/60 bg-white/90 text-foreground opacity-0 shadow-sm backdrop-blur-sm transition-all group-hover/avatar:opacity-100 hover:scale-110 hover:bg-white active:scale-95"
+                className="absolute -bottom-0.5 -right-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full border border-border/60 bg-surface-1/90 text-foreground opacity-0 shadow-sm backdrop-blur-sm transition-all group-hover/avatar:opacity-100 hover:scale-110 hover:bg-surface-1 active:scale-95"
                 type="button"
                 aria-label="Shuffle avatar"
                 data-testid="agent-avatar-shuffle"

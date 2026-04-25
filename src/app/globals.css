@@ -115,6 +115,16 @@
   --chat-assistant-border: var(--border);
   --chat-user-bg: var(--surface-3);
   --chat-user-fg: var(--foreground);
+
+  /* Overrides for pale colors in dark mode */
+  --pale-blue: color-mix(in srgb, #E1F3FE 15%, transparent);
+  --pale-blue-fg: #E1F3FE;
+  --pale-red: color-mix(in srgb, #FDEBEC 15%, transparent);
+  --pale-red-fg: #FDEBEC;
+  --pale-green: color-mix(in srgb, #EDF3EC 15%, transparent);
+  --pale-green-fg: #EDF3EC;
+  --pale-yellow: color-mix(in srgb, #FBF3DB 15%, transparent);
+  --pale-yellow-fg: #FBF3DB;
 }
 
 @theme inline {
@@ -875,10 +885,16 @@ textarea:focus::-webkit-scrollbar {
 .ui-chat-user-card {
   max-width: 100%;
   border-radius: 8px;
-  background: var(--pale-blue);
-  color: var(--pale-blue-fg);
+  background: var(--chat-user-bg);
+  color: var(--chat-user-fg);
   padding: 1rem 1.25rem;
-  border: 1px solid var(--pale-blue-fg);
+  border: 1px solid var(--border);
+}
+
+.dark .ui-chat-user-card {
+  background: var(--surface-2);
+  color: var(--foreground);
+  border-color: var(--border);
 }
 
 .ui-chat-assistant-card {

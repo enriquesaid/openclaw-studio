@@ -102,7 +102,7 @@ export const FleetSidebar = ({
 
   return (
     <aside
-      className="fade-up-delay relative flex h-full w-full min-w-72 flex-col bg-background xl:max-w-[320px] xl:bg-transparent"
+      className="fade-up-delay relative flex h-full w-full min-w-72 flex-col bg-sidebar xl:max-w-[320px] xl:bg-transparent"
       data-testid="fleet-sidebar"
     >
       <div className="flex flex-col gap-6 p-6 pb-0">
