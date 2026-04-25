@@ -26,7 +26,7 @@ export const AgentAvatar = ({
 
   return (
     <div
-      className={`flex items-center justify-center overflow-hidden rounded-full border border-border/80 bg-card transition-transform duration-300 ${isSelected ? "agent-avatar-selected scale-[1.02]" : ""}`}
+      className={`flex items-center justify-center overflow-hidden rounded-md border border-border bg-card transition-all ${isSelected ? "border-foreground scale-[1.05]" : ""}`}
       style={{ width: size, height: size }}
     >
       <Image

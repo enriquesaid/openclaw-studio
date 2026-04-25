@@ -9,7 +9,6 @@ import {
   AgentSettingsPanel,
 } from "@/features/agents/components/AgentInspectPanels";
 import { FleetSidebar } from "@/features/agents/components/FleetSidebar";
-import { HeaderBar } from "@/features/agents/components/HeaderBar";
 import { ConnectionPanel } from "@/features/agents/components/ConnectionPanel";
 import { GatewayConnectScreen } from "@/features/agents/components/GatewayConnectScreen";
 import { EmptyStatePanel } from "@/features/agents/components/EmptyStatePanel";
@@ -1474,11 +1473,7 @@ const AgentStudioPage = () => {
         </div>
       ) : null}
       <div className="relative z-10 flex h-dvh flex-col">
-        <HeaderBar
-          status={gatewayStatus}
-          onConnectionSettings={() => setShowConnectionPanel(true)}
-        />
-        <div className="flex min-h-0 flex-1 flex-col gap-3 px-3 pb-3 pt-2 sm:px-4 sm:pb-4 sm:pt-3 md:px-5 md:pb-5 md:pt-3">
+        <div className="flex min-h-0 flex-1 flex-col sm:flex-row">
           {connectionPanelVisible ? (
             <div className="fixed inset-0 z-[140]" data-testid="gateway-connection-overlay">
               <div
@@ -1551,32 +1546,19 @@ const AgentStudioPage = () => {
                     Back to chat
                   </button>
                 </div>
-                <nav className="py-3">
-                  {(
-                    [
-                      { id: "personality", label: "Behavior" },
-                      { id: "capabilities", label: "Capabilities" },
-                      { id: "automations", label: "Automations" },
-                      { id: "advanced", label: "Advanced" },
-                    ] as const
-                  ).map((entry) => {
-                    const active = effectiveSettingsTab === entry.id;
+                <nav className="flex flex-col gap-0.5 p-1.5">
+                  {SETTINGS_TABS.map((entry) => {
+                    const active = effectiveSettingsTab === entry.value;
                     return (
                       <button
-                        key={entry.id}
+                        key={entry.value}
+                        className="relative flex h-9 items-center rounded-md px-3 text-left text-xs font-medium text-foreground transition hover:bg-surface-2"
                         type="button"
-                        className={`relative w-full px-5 py-3 text-left text-sm transition ${
-                          active
-                            ? "bg-surface-2/55 font-medium text-foreground"
-                            : "font-normal text-muted-foreground hover:bg-surface-2/35 hover:text-foreground"
-                        }`}
-                        onClick={() => {
-                          handleSettingsRouteTabChange(entry.id);
-                        }}
+                        onClick={() => handleUpdateAgentSettingsRouteTab(entry.value)}
                       >
                         {active ? (
                           <span
-                            className="absolute inset-y-2 left-0 w-0.5 rounded-r bg-primary"
+                            className="absolute left-0 top-2.5 h-4 w-1 rounded-r-full bg-primary"
                             aria-hidden="true"
                           />
                         ) : null}
@@ -1618,10 +1600,10 @@ const AgentStudioPage = () => {
                             key={`${inspectSidebarAgent.agentId}:${effectiveSettingsTab}`}
                             mode={
                               effectiveSettingsTab === "automations"
-                                ? "automations"
-                                : effectiveSettingsTab === "advanced"
-                                  ? "advanced"
-                                  : "capabilities"
+                                  ? "automations"
+                                  : effectiveSettingsTab === "advanced"
+                                    ? "advanced"
+                                    : "capabilities"
                             }
                             showHeader={false}
                             agent={inspectSidebarAgent}
@@ -1669,45 +1651,29 @@ const AgentStudioPage = () => {
               </div>
             </div>
           ) : (
-            <div className="flex min-h-0 flex-1 flex-col gap-4 xl:flex-row">
-              <div className="glass-panel ui-panel p-2 xl:hidden" data-testid="mobile-pane-toggle">
-                <div className="ui-segment grid-cols-2">
-                  <button
-                    type="button"
-                    className="ui-segment-item px-2 py-2 font-mono text-[12px] font-medium tracking-[0.02em]"
-                    data-active={mobilePane === "fleet" ? "true" : "false"}
-                    onClick={() => setMobilePane("fleet")}
-                  >
-                    Fleet
-                  </button>
-                  <button
-                    type="button"
-                    className="ui-segment-item px-2 py-2 font-mono text-[12px] font-medium tracking-[0.02em]"
-                    data-active={mobilePane === "chat" ? "true" : "false"}
-                    onClick={() => setMobilePane("chat")}
-                  >
-                    Chat
-                  </button>
-                </div>
-              </div>
+            <div className="relative flex min-h-0 flex-1 flex-col gap-4 overflow-hidden xl:flex-row xl:overflow-visible">
               <div
-                className={`${mobilePane === "fleet" ? "block" : "hidden"} min-h-0 xl:block xl:min-h-0`}
+                className={`${
+                  mobilePane === "fleet"
+                      ? "translate-x-0 opacity-100"
+                      : "-translate-x-full opacity-0 pointer-events-none"
+                } absolute inset-0 z-30 min-h-0 bg-background transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] xl:pointer-events-auto xl:static xl:block xl:translate-x-0 xl:bg-transparent xl:opacity-100 xl:min-h-0`}
               >
                 <FleetSidebar
                   agents={filteredAgents}
-                  selectedAgentId={focusedAgent?.agentId ?? state.selectedAgentId}
+                  selectedAgentId={focusedAgentId}
                   filter={focusFilter}
+                  gatewayStatus={gatewayStatus}
                   onFilterChange={handleFocusFilterChange}
-                  onCreateAgent={() => {
-                    handleOpenCreateAgentModal();
-                  }}
-                  createDisabled={!gatewayConnected || createAgentBusy || state.loading}
-                  createBusy={createAgentBusy}
                   onSelectAgent={handleFleetSelectAgent}
+                  onCreateAgent={() => setCreateAgentModalOpen(true)}
+                  onConnectionSettings={() => setShowConnectionPanel(true)}
+                  createDisabled={hasRestartBlockInProgress || hasDeleteMutationBlock}
+                  createBusy={createAgentBusy}
                 />
               </div>
               <div
-                className={`${mobilePane === "chat" ? "flex" : "hidden"} ui-panel ui-depth-workspace min-h-0 flex-1 overflow-hidden xl:flex`}
+                className="flex ui-panel ui-depth-workspace min-h-0 flex-1 overflow-hidden"
                 data-testid="focused-agent-panel"
               >
                 {focusedAgent ? (
@@ -1753,6 +1719,7 @@ const AgentStudioPage = () => {
                           )
                         }
                         onAvatarShuffle={() => handleAvatarShuffle(focusedAgent.agentId)}
+                        onBackToFleet={() => setMobilePane("fleet")}
                         pendingExecApprovals={focusedPendingExecApprovals}
                         onResolveExecApproval={(id, decision) => {
                           void handleResolveExecApproval(id, decision);

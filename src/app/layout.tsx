@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Bebas_Neue, IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
+import { Playfair_Display, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -7,19 +7,14 @@ export const metadata: Metadata = {
   description: "Focused operator studio for the OpenClaw gateway.",
 };
 
-const display = Bebas_Neue({
+const display = Playfair_Display({
   variable: "--font-display",
-  weight: "400",
+  weight: ["400", "500", "600", "700", "800", "900"],
   subsets: ["latin"],
+  style: "italic",
 });
 
-const sans = IBM_Plex_Sans({
-  variable: "--font-sans",
-  weight: ["400", "500", "600", "700"],
-  subsets: ["latin"],
-});
-
-const mono = IBM_Plex_Mono({
+const mono = JetBrains_Mono({
   variable: "--font-mono",
   weight: ["400", "500", "600"],
   subsets: ["latin"],
@@ -40,7 +35,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${display.variable} ${sans.variable} ${mono.variable} antialiased`}>
+      <body className={`${display.variable} ${mono.variable} font-sans antialiased`}>
         {children}
       </body>
     </html>

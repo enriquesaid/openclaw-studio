@@ -14,7 +14,7 @@ import {
 import type { AgentState as AgentRecord } from "@/features/agents/state/store";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Check, ChevronRight, Clock, Cog, Maximize2, Pencil, Shuffle, Trash2, X } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Clock, Cog, Maximize2, Pencil, Shuffle, Trash2, X } from "lucide-react";
 import type { GatewayModelChoice } from "@/lib/gateway/models";
 import { rewriteMediaLinesToMarkdown } from "@/lib/text/media-markdown";
 import { normalizeAssistantDisplayText } from "@/lib/text/assistantText";
@@ -58,8 +58,8 @@ const formatDurationLabel = (durationMs: number): string => {
   return `${Math.round(seconds)}s`;
 };
 
-const SPINE_LEFT = "left-[15px]";
-const ASSISTANT_GUTTER_CLASS = "pl-[44px]";
+const SPINE_LEFT = "left-[15px] hidden sm:block";
+const ASSISTANT_GUTTER_CLASS = "pl-[32px] sm:pl-[44px]";
 const ASSISTANT_MAX_WIDTH_DEFAULT_CLASS = "max-w-[68ch]";
 const ASSISTANT_MAX_WIDTH_EXPANDED_CLASS = "max-w-[1120px]";
 const CHAT_TOP_THRESHOLD_PX = 8;
@@ -147,6 +147,7 @@ type AgentChatPanelProps = {
   onRemoveQueuedMessage?: (index: number) => void;
   onStopRun: () => void;
   onAvatarShuffle: () => void;
+  onBackToFleet?: () => void;
   pendingExecApprovals?: PendingExecApproval[];
   onResolveExecApproval?: (id: string, decision: ExecApprovalDecision) => void;
 };
@@ -358,22 +359,24 @@ const UserMessageCard = memo(function UserMessageCard({
 }) {
   return (
     <div
-      className="ui-chat-user-card w-full max-w-[70ch] self-end overflow-hidden rounded-[var(--radius-small)] bg-[color:var(--chat-user-bg)]"
+      className="w-full self-end py-2 flex flex-col items-end"
       style={MESSAGE_CONTENT_VISIBILITY_STYLE}
       {...(testId ? { "data-testid": testId } : {})}
     >
-      <div className="flex items-center justify-between gap-3 bg-[color:var(--chat-user-header-bg)] px-3 py-2 dark:px-3.5 dark:py-2.5">
-        <div className="type-meta min-w-0 truncate font-mono text-foreground/90">
-          You
+      <div className={`${ASSISTANT_MAX_WIDTH_DEFAULT_CLASS} flex flex-col gap-2`}>
+        <div className="flex items-baseline justify-end gap-2 border-b border-border pb-1.5">
+          {typeof timestampMs === "number" ? (
+            <time className="font-mono text-[9px] font-bold uppercase tracking-widest text-muted-foreground/30">
+              {formatChatTimestamp(timestampMs)}
+            </time>
+          ) : null}
+          <div className="font-mono text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60">
+            Operator <span className="not-italic text-foreground/40">(You)</span>
+          </div>
         </div>
-        {typeof timestampMs === "number" ? (
-          <time className="type-meta shrink-0 rounded-md bg-surface-3 px-2 py-0.5 font-mono text-muted-foreground/70">
-            {formatChatTimestamp(timestampMs)}
-          </time>
-        ) : null}
-      </div>
-      <div className="agent-markdown type-body px-3 py-3 text-foreground dark:px-3.5 dark:py-3.5">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>{text}</ReactMarkdown>
+        <div className="ui-chat-user-card rounded-md p-4 text-[15px] leading-relaxed text-foreground">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{text}</ReactMarkdown>
+        </div>
       </div>
     </div>
   );
@@ -426,12 +429,12 @@ const AssistantMessageCard = memo(function AssistantMessageCard({
         <div className="absolute left-[4px] top-[2px]">
           <AgentAvatar seed={avatarSeed} name={name} avatarUrl={avatarUrl} size={22} />
         </div>
-        <div className="flex items-center justify-between gap-3 py-0.5">
-          <div className="type-meta min-w-0 truncate font-mono text-foreground/90">
+        <div className="flex items-baseline gap-2 py-0.5">
+          <div className="font-mono text-[9px] font-bold uppercase tracking-widest text-foreground/80">
             {name}
           </div>
           {resolvedTimestamp !== null ? (
-            <time className="type-meta shrink-0 rounded-md bg-surface-3 px-2 py-0.5 font-mono text-muted-foreground/90">
+            <time className="font-mono text-[9px] font-bold uppercase tracking-widest text-muted-foreground/40">
               {formatChatTimestamp(resolvedTimestamp)}
             </time>
           ) : null}
@@ -836,23 +839,23 @@ const AgentChatTranscript = memo(function AgentChatTranscript({
           event.stopPropagation();
         }}
       >
-        <div className="relative flex min-w-0 flex-col gap-6 text-[14px] leading-[1.65] text-foreground dark:gap-8">
+        <div className="relative flex min-w-0 flex-col gap-4 text-[14px] leading-[1.65] text-foreground sm:gap-6 dark:gap-5 dark:sm:gap-8">
           <div aria-hidden className={`pointer-events-none absolute ${SPINE_LEFT} top-0 bottom-0 w-px bg-border/20`} />
           {showLoadMoreBanner ? (
-            <div className="flex flex-col items-start gap-2 rounded-md bg-surface-2 px-3 py-2 shadow-2xs sm:flex-row sm:items-center sm:justify-between sm:gap-3">
-              <div className="type-meta w-full min-w-0 break-words font-mono text-muted-foreground sm:truncate">
+            <div className={`flex flex-col items-start gap-4 border-b border-border pb-6 sm:flex-row sm:items-center sm:justify-between ${ASSISTANT_GUTTER_CLASS}`}>
+              <div className="font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted-foreground/40">
                 {hasHiddenFetchedHistory && typeof historyFetchedCount === "number" && typeof visibleTurnCount === "number"
                   ? `Showing latest ${visibleTurnCount} of ${historyFetchedCount} loaded turns`
                   : `Showing latest ${typeof visibleTurnCount === "number" ? visibleTurnCount : "?"} turns`}
               </div>
               {historyGatewayCapReached && !hasHiddenFetchedHistory ? (
-                <div className="type-meta w-full min-w-0 break-words font-mono text-muted-foreground sm:w-auto sm:shrink-0">
+                <div className="font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted-foreground/40">
                   Showing latest retrievable history
                 </div>
               ) : (
                 <button
                   type="button"
-                  className="inline-flex w-fit self-start rounded-md border border-border/70 bg-surface-3 px-3 py-1.5 font-mono text-[12px] font-medium tracking-[0.02em] text-foreground transition hover:bg-surface-2 sm:self-auto"
+                  className="ui-btn-secondary px-3 py-1.5 font-mono text-[10px] font-bold tracking-[0.06em] uppercase transition-all"
                   onClick={onLoadMoreHistory}
                 >
                   {hasHiddenFetchedHistory ? "Show older" : "Load more"}
@@ -1123,7 +1126,7 @@ const AgentChatComposer = memo(function AgentChatComposer({
         {running ? (
           <span className="inline-flex" title={stopReason || undefined}>
             <button
-              className="shrink-0 rounded-md border border-border/70 bg-surface-3 px-3.5 py-2.5 font-mono text-[12px] font-medium tracking-[0.02em] text-foreground transition hover:bg-surface-2 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground sm:px-3 sm:py-2"
+              className="ui-btn-secondary shrink-0 px-3.5 py-2.5 text-[10px] font-bold uppercase tracking-widest transition-all disabled:cursor-not-allowed disabled:opacity-50 sm:px-3 sm:py-2"
               type="button"
               onClick={onStop}
               disabled={stopDisabled}
@@ -1134,7 +1137,7 @@ const AgentChatComposer = memo(function AgentChatComposer({
           </span>
         ) : null}
         <button
-          className="ui-btn-primary ui-btn-send shrink-0 px-3.5 py-2.5 font-mono text-[12px] font-medium tracking-[0.02em] disabled:cursor-not-allowed disabled:border-border disabled:bg-muted disabled:text-muted-foreground sm:px-3 sm:py-2"
+          className="ui-btn-primary shrink-0 px-3.5 py-2.5 text-[10px] font-bold uppercase tracking-widest disabled:cursor-not-allowed disabled:opacity-50 sm:px-4 sm:py-2"
           type="button"
           onClick={onSend}
           disabled={sendDisabled}
@@ -1142,11 +1145,11 @@ const AgentChatComposer = memo(function AgentChatComposer({
           Send
         </button>
       </div>
-      <div className="mt-2 flex flex-col gap-2 sm:mt-1 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex w-full min-w-0 flex-wrap items-center gap-2 sm:w-auto sm:flex-nowrap">
+      <div className="mt-2.5 flex flex-wrap items-center gap-2.5 sm:mt-2 sm:gap-3">
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
           <InlineHoverTooltip text="Choose model">
             <select
-              className="ui-input ui-control-important h-6 min-w-0 max-w-full rounded-md px-1.5 text-[10px] font-semibold text-foreground"
+              className="ui-input ui-control-important h-7 min-w-0 max-w-full rounded-md px-2 text-[11px] font-semibold text-foreground transition-all hover:border-primary/50"
               aria-label="Model"
               value={modelValue}
               style={{ width: `${modelSelectWidthCh}ch`, maxWidth: "clamp(12ch, 58vw, 30ch)" }}
@@ -1169,7 +1172,7 @@ const AgentChatComposer = memo(function AgentChatComposer({
           {allowThinking ? (
             <InlineHoverTooltip text="Select reasoning effort">
               <select
-                className="ui-input ui-control-important h-6 min-w-0 max-w-full rounded-md px-1.5 text-[10px] font-semibold text-foreground"
+                className="ui-input ui-control-important h-7 min-w-0 max-w-full rounded-md px-2 text-[11px] font-semibold text-foreground transition-all hover:border-primary/50"
                 aria-label="Thinking"
                 value={thinkingValue}
                 style={{ width: `${thinkingSelectWidthCh}ch`, maxWidth: "min(40vw, 16ch)" }}
@@ -1189,17 +1192,16 @@ const AgentChatComposer = memo(function AgentChatComposer({
             </InlineHoverTooltip>
           ) : null}
         </div>
-        <div className="flex w-full flex-wrap items-center justify-end gap-1.5 text-[10px] text-muted-foreground sm:ml-auto sm:w-auto sm:flex-nowrap">
-          <span className="font-mono tracking-[0.02em]">Show</span>
+        <div className="ml-auto flex items-center gap-1.5 text-[10px] text-muted-foreground">
           <button
             type="button"
             role="switch"
             aria-label="Show tool calls"
             aria-checked={toolCallingEnabled}
-            className={`inline-flex h-5 shrink-0 items-center rounded-sm border px-1.5 font-mono text-[10px] tracking-[0.01em] transition ${
+            className={`inline-flex h-6 shrink-0 items-center rounded-sm border px-2 font-mono text-[9px] font-bold uppercase tracking-widest transition-all ${
               toolCallingEnabled
-                ? "border-primary/45 bg-primary/14 text-foreground"
-                : "border-border/70 bg-surface-2/40 text-muted-foreground hover:text-foreground"
+                ? "border-foreground bg-foreground text-background"
+                : "border-border bg-surface-2 text-muted-foreground hover:text-foreground"
             }`}
             onClick={() => onToolCallingToggle(!toolCallingEnabled)}
           >
@@ -1210,10 +1212,10 @@ const AgentChatComposer = memo(function AgentChatComposer({
             role="switch"
             aria-label="Show thinking"
             aria-checked={showThinkingTraces}
-            className={`inline-flex h-5 shrink-0 items-center rounded-sm border px-1.5 font-mono text-[10px] tracking-[0.01em] transition ${
+            className={`inline-flex h-6 shrink-0 items-center rounded-sm border px-2 font-mono text-[9px] font-bold uppercase tracking-widest transition-all ${
               showThinkingTraces
-                ? "border-primary/45 bg-primary/14 text-foreground"
-                : "border-border/70 bg-surface-2/40 text-muted-foreground hover:text-foreground"
+                ? "border-foreground bg-foreground text-background"
+                : "border-border bg-surface-2 text-muted-foreground hover:text-foreground"
             }`}
             onClick={() => onThinkingTracesToggle(!showThinkingTraces)}
           >
@@ -1245,6 +1247,7 @@ export const AgentChatPanel = ({
   onRemoveQueuedMessage,
   onStopRun,
   onAvatarShuffle,
+  onBackToFleet,
   pendingExecApprovals = [],
   onResolveExecApproval,
 }: AgentChatPanelProps) => {
@@ -1596,101 +1599,110 @@ export const AgentChatPanel = ({
   const newSessionDisabled = newSessionBusy || !canSend || !onNewSession;
 
   return (
-    <div data-agent-panel className="group fade-up relative flex h-full w-full min-w-0 flex-col overflow-hidden">
-      <div className="px-3 pt-2 sm:px-4 sm:pt-3">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div className="flex min-w-0 items-start gap-3">
-            <div className="group/avatar relative">
-              <AgentAvatar
-                seed={avatarSeed}
-                name={agent.name}
-                avatarUrl={agent.avatarUrl ?? null}
-                size={84}
-                isSelected={isSelected}
-              />
-              <button
-                className="nodrag ui-btn-icon ui-btn-icon-xs agent-avatar-shuffle-btn absolute bottom-0.5 right-0.5"
-                type="button"
-                aria-label="Shuffle avatar"
-                data-testid="agent-avatar-shuffle"
-                onClick={(event) => {
-                  event.preventDefault();
-                  event.stopPropagation();
-                  onAvatarShuffle();
-                }}
-              >
-                <Shuffle className="h-2.5 w-2.5" />
-              </button>
-            </div>
-
-            <div className="min-w-0 flex-1">
-              <div className="flex min-w-0 items-center gap-2">
-                <div className="min-w-0 w-[clamp(8.5rem,42vw,16rem)] sm:w-[clamp(11rem,34vw,16rem)]">
-                  {renameEditing ? (
-                    <div ref={renameEditorRef} className="flex h-8 items-center gap-1.5">
-                      <input
-                        ref={renameInputRef}
-                        className="ui-input agent-rename-input h-8 min-w-0 flex-1 rounded-md px-2 text-[12px] font-semibold text-foreground"
-                        aria-label="Edit agent name"
-                        data-testid="agent-rename-input"
-                        value={renameDraft}
-                        disabled={renameSaving}
-                        onChange={(event) => {
-                          setRenameDraft(event.target.value);
-                          if (renameError) setRenameError(null);
-                        }}
-                        onKeyDown={handleRenameInputKeyDown}
-                      />
-                      <button
-                        className="ui-btn-icon ui-btn-icon-sm agent-rename-control"
-                        type="button"
-                        aria-label="Save agent name"
-                        data-testid="agent-rename-save"
-                        onClick={() => {
-                          void submitRename();
-                        }}
-                        disabled={renameSaving}
-                      >
-                        <Check className="h-3.5 w-3.5" />
-                      </button>
-                      <button
-                        className="ui-btn-icon ui-btn-icon-sm agent-rename-control"
-                        type="button"
-                        aria-label="Cancel agent rename"
-                        data-testid="agent-rename-cancel"
-                        onClick={cancelRename}
-                        disabled={renameSaving}
-                      >
-                        <X className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex h-8 min-w-0 items-center gap-1.5">
-                      <div className="type-agent-name min-w-0 truncate text-foreground">
-                        {agent.name}
-                      </div>
-                      {onRename ? (
-                        <button
-                          className="ui-btn-icon ui-btn-icon-xs agent-rename-control shrink-0"
-                          type="button"
-                          aria-label="Rename agent"
-                          data-testid="agent-rename-toggle"
-                          onClick={beginRename}
-                        >
-                          <Pencil className="h-3 w-3" />
-                        </button>
-                      ) : null}
-                    </div>
-                  )}
-                </div>
-              </div>
-              {renameError ? (
-                <div className="ui-text-danger mt-1 text-[11px]">{renameError}</div>
-              ) : null}
-            </div>
+    <div data-agent-panel className="group fade-up relative flex h-full w-full min-w-0 flex-col overflow-hidden bg-white">
+      <div className="px-6 pt-6 sm:px-8 sm:pt-8">
+        <div className="flex items-center gap-6">
+          {onBackToFleet ? (
+            <button
+              className="ui-btn-icon h-8 w-8 shrink-0 xl:!hidden"
+              type="button"
+              aria-label="Back to fleet"
+              data-testid="mobile-back-to-fleet"
+              onClick={onBackToFleet}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+          ) : null}
+          <div className="relative shrink-0">
+            <AgentAvatar
+              seed={avatarSeed}
+              name={agent.name}
+              avatarUrl={agent.avatarUrl ?? null}
+              size={64}
+              isSelected={isSelected}
+            />
+            <button
+              className="ui-btn-icon h-6 w-6 absolute -bottom-1 -right-1 border border-border bg-card shadow-xs"
+              type="button"
+              aria-label="Shuffle avatar"
+              data-testid="agent-avatar-shuffle"
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                onAvatarShuffle();
+              }}
+            >
+              <Shuffle className="h-2.5 w-2.5" />
+            </button>
           </div>
 
-          <div className="mt-0.5 flex w-full items-center justify-end gap-2 sm:w-auto">
+          <div className="min-w-0 flex-1">
+            <div className="flex min-w-0 items-center gap-2">
+              <div className="min-w-0 flex-1 sm:w-[clamp(11rem,34vw,16rem)] sm:flex-initial">
+                {renameEditing ? (
+                  <div ref={renameEditorRef} className="flex h-8 items-center gap-1.5">
+                    <input
+                      ref={renameInputRef}
+                      className="ui-input agent-rename-input h-8 min-w-0 flex-1 rounded-md px-2 text-[12px] font-semibold text-foreground"
+                      aria-label="Edit agent name"
+                      data-testid="agent-rename-input"
+                      value={renameDraft}
+                      disabled={renameSaving}
+                      onChange={(event) => {
+                        setRenameDraft(event.target.value);
+                        if (renameError) setRenameError(null);
+                      }}
+                      onKeyDown={handleRenameInputKeyDown}
+                    />
+                    <button
+                      className="ui-btn-icon ui-btn-icon-sm agent-rename-control"
+                      type="button"
+                      aria-label="Save agent name"
+                      data-testid="agent-rename-save"
+                      onClick={() => {
+                        void submitRename();
+                      }}
+                      disabled={renameSaving}
+                    >
+                      <Check className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      className="ui-btn-icon ui-btn-icon-sm agent-rename-control"
+                      type="button"
+                      aria-label="Cancel agent rename"
+                      data-testid="agent-rename-cancel"
+                      onClick={cancelRename}
+                      disabled={renameSaving}
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex h-8 min-w-0 items-center gap-2">
+                    <div className="font-display text-2xl font-medium tracking-tight text-foreground italic min-w-0 truncate">
+                      {agent.name}
+                    </div>
+                    {onRename ? (
+                      <button
+                        className="ui-btn-icon ui-btn-icon-xs agent-rename-control shrink-0"
+                        type="button"
+                        aria-label="Rename agent"
+                        data-testid="agent-rename-toggle"
+                        onClick={beginRename}
+                      >
+                        <Pencil className="h-3 w-3" />
+                      </button>
+                    ) : null}
+                  </div>
+                )}
+              </div>
+            </div>
+            {renameError ? (
+              <div className="ui-text-danger mt-1 text-[11px]">{renameError}</div>
+            ) : null}
+          </div>
+
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
             <button
               className="nodrag ui-btn-icon !inline-flex md:!hidden"
               type="button"
@@ -1701,7 +1713,7 @@ export const AgentChatPanel = ({
               <Maximize2 className="h-4 w-4" />
             </button>
             <button
-              className="nodrag ui-btn-primary px-2.5 py-1.5 font-mono text-[11px] font-medium tracking-[0.02em] disabled:cursor-not-allowed disabled:border-border disabled:bg-muted disabled:text-muted-foreground"
+              className="nodrag ui-btn-primary px-2.5 py-1.5 text-[11px] font-medium disabled:cursor-not-allowed disabled:border-border disabled:bg-muted disabled:text-muted-foreground"
               type="button"
               data-testid="agent-new-session-toggle"
               aria-label="Start new session"
@@ -1711,7 +1723,8 @@ export const AgentChatPanel = ({
               }}
               disabled={newSessionDisabled}
             >
-              {newSessionBusy ? "Starting..." : "New session"}
+              <span className="hidden sm:inline">{newSessionBusy ? "Starting..." : "New session"}</span>
+              <span className="sm:hidden">{newSessionBusy ? "..." : "New"}</span>
             </button>
             <button
               className="nodrag ui-btn-icon"

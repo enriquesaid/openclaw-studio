@@ -206,44 +206,43 @@ export const GatewayConnectScreen = ({
     label: string;
     helper?: string;
   }) => (
-    <div className="space-y-1.5">
+    <div className="space-y-2">
       <div className="flex items-center justify-between gap-2">
-        <p className="font-mono text-[10px] font-semibold tracking-[0.06em] text-muted-foreground">
+        <p className="font-mono text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
           {params.label}
         </p>
         <button
           type="button"
-          className="ui-btn-ghost h-7 px-2 text-[11px]"
+          className="font-mono text-[9px] font-bold uppercase tracking-widest text-foreground hover:underline"
           onClick={() => void copyCommand(params.value)}
         >
-          {copyStatus === "copied" ? "Copied" : copyStatus === "failed" ? "Copy failed" : "Copy"}
+          {copyStatus === "copied" ? "Copied" : "Copy"}
         </button>
       </div>
-      <div className="ui-command-surface flex items-center gap-2 rounded-md px-3 py-2">
-        <code className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap font-mono text-[12px]">
+      <div className="flex items-center gap-3 border border-border bg-white px-4 py-2.5">
+        <code className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap font-mono text-[11px] text-foreground">
           {params.value}
         </code>
         <button
           type="button"
-          className="ui-btn-icon ui-command-copy h-7 w-7 shrink-0"
+          className="shrink-0 text-muted-foreground hover:text-foreground"
           onClick={() => void copyCommand(params.value)}
           aria-label={`Copy ${params.label}`}
-          title="Copy command"
         >
           {copyStatus === "copied" ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
         </button>
       </div>
       {params.helper ? (
-        <p className="text-xs leading-snug text-muted-foreground">{params.helper}</p>
+        <p className="text-[11px] leading-relaxed text-muted-foreground">{params.helper}</p>
       ) : null}
     </div>
   );
 
   const scenarioButtonClass = (scenario: StudioSetupScenario): string => {
-    return `ui-card rounded-xl px-4 py-3 text-left transition ${
+    return `relative flex flex-col gap-2 rounded-sm p-6 text-left transition-all border ${
       selectedScenario === scenario
-        ? "ui-card-selected border-primary/60"
-        : "border border-border/70 hover:border-border"
+        ? "bg-white border-foreground ring-1 ring-foreground"
+        : "bg-card border-border hover:bg-white"
     }`;
   };
 
