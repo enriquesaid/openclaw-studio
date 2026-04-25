@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Playfair_Display, JetBrains_Mono } from "next/font/google";
+import { Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -7,11 +7,10 @@ export const metadata: Metadata = {
   description: "Focused operator studio for the OpenClaw gateway.",
 };
 
-const display = Playfair_Display({
+const display = Outfit({
   variable: "--font-display",
   weight: ["400", "500", "600", "700", "800", "900"],
   subsets: ["latin"],
-  style: "italic",
 });
 
 const mono = JetBrains_Mono({

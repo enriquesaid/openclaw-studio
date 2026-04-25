@@ -106,6 +106,7 @@ import {
   SETTINGS_ROUTE_AGENT_ID_QUERY_PARAM,
   parseSettingsRouteAgentIdFromQueryParam,
   parseSettingsRouteAgentIdFromPathname,
+  SETTINGS_TABS,
   type InspectSidebarState,
   type SettingsRouteTab,
 } from "@/features/agents/operations/settingsRouteWorkflow";
@@ -1554,7 +1555,7 @@ const AgentStudioPage = () => {
                         key={entry.value}
                         className="relative flex h-9 items-center rounded-md px-3 text-left text-xs font-medium text-foreground transition hover:bg-surface-2"
                         type="button"
-                        onClick={() => handleUpdateAgentSettingsRouteTab(entry.value)}
+                        onClick={() => handleSettingsRouteTabChange(entry.value)}
                       >
                         {active ? (
                           <span

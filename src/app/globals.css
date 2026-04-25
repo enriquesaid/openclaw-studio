@@ -23,7 +23,7 @@
   --radius-small: 6px;
   --radius-card: 8px;
   --radius-container: 12px;
-  --font-display: var(--font-display), serif;
+  --font-display: var(--font-display), sans-serif;
   --font-sans: 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
   --font-mono: var(--font-mono), monospace;
   --shadow-color: rgba(0, 0, 0, 0.04);

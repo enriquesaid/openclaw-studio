@@ -4,6 +4,14 @@ export type SettingsRouteTab =
   | "automations"
   | "advanced";
 
+export const SETTINGS_TABS: { label: string; value: SettingsRouteTab }[] = [
+  { label: "Personality", value: "personality" },
+  { label: "Capabilities", value: "capabilities" },
+  { label: "Automations", value: "automations" },
+  { label: "Advanced", value: "advanced" },
+];
+
+
 export type InspectSidebarState =
   | { agentId: string; tab: SettingsRouteTab }
   | null;
