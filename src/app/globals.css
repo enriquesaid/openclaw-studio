@@ -68,6 +68,10 @@
   --chat-user-fg: var(--foreground);
   --sidebar: #FFFFFF;
   --sidebar-border: var(--border);
+
+  --danger-soft-bg: var(--pale-red);
+  --danger-soft-border: var(--status-error-border);
+  --danger-soft-fg: var(--pale-red-fg);
 }
 
 .dark {
@@ -127,6 +131,10 @@
   --pale-green-fg: #EDF3EC;
   --pale-yellow: color-mix(in srgb, #FBF3DB 15%, transparent);
   --pale-yellow-fg: #FBF3DB;
+
+  --danger-soft-bg: var(--status-error-bg);
+  --danger-soft-border: var(--status-error-border);
+  --danger-soft-fg: var(--status-error-fg);
 }
 
 @theme inline {
@@ -1097,6 +1105,29 @@ textarea:focus::-webkit-scrollbar {
 .ui-command-surface {
   border: 1px solid var(--command-border);
   background: var(--command-bg);
+}
+
+.ui-alert-danger {
+  background: var(--danger-soft-bg);
+  border: 1px solid var(--danger-soft-border);
+  color: var(--danger-soft-fg);
+  word-break: break-word;
+  animation: alertFadeIn 200ms ease-out;
+}
+
+@keyframes alertFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ui-text-danger {
+  color: var(--status-error-fg);
 }
 
 .ui-command-surface code {
