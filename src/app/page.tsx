@@ -1474,6 +1474,29 @@ const AgentStudioPage = () => {
         </div>
       ) : null}
       <div className="relative z-10 flex h-dvh flex-col">
+        {/* Global Floating Alerts */}
+        <div className="pointer-events-none fixed left-0 right-0 top-4 z-[200] flex flex-col items-center gap-3 px-4">
+          {studioCliUpdateWarning ? (
+            <div className="pointer-events-auto w-full max-w-xl">
+              <div className="ui-alert-danger rounded-xl px-5 py-3 text-sm shadow-2xl ring-1 ring-black/5">
+                <div className="flex items-center gap-3">
+                  <span className="flex-1">{studioCliUpdateWarning}</span>
+                </div>
+              </div>
+            </div>
+          ) : null}
+
+          {errorMessage ? (
+            <div className="pointer-events-auto w-full max-w-xl">
+              <div className="ui-alert-danger rounded-xl px-5 py-3 text-sm shadow-2xl ring-1 ring-black/5">
+                <div className="flex items-center gap-3">
+                  <span className="flex-1">{errorMessage}</span>
+                </div>
+              </div>
+            </div>
+          ) : null}
+        </div>
+
         <div className="flex min-h-0 flex-1 flex-col sm:flex-row">
           {connectionPanelVisible ? (
             <div className="fixed inset-0 z-[140]" data-testid="gateway-connection-overlay">
@@ -1509,21 +1532,6 @@ const AgentStudioPage = () => {
             </div>
           ) : null}
 
-          {studioCliUpdateWarning ? (
-            <div className="w-full">
-              <div className="ui-alert-danger rounded-md px-4 py-2 text-sm">
-                {studioCliUpdateWarning}
-              </div>
-            </div>
-          ) : null}
-
-          {errorMessage ? (
-            <div className="w-full">
-              <div className="ui-alert-danger rounded-md px-4 py-2 text-sm">
-                {errorMessage}
-              </div>
-            </div>
-          ) : null}
           {configMutationStatusLine ? (
             <div className="w-full">
               <div className="ui-card px-4 py-2 font-mono text-[11px] tracking-[0.07em] text-muted-foreground">
