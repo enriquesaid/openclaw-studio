@@ -66,6 +66,8 @@
   --chat-assistant-border: var(--border);
   --chat-user-bg: #F0F4F8;
   --chat-user-fg: var(--foreground);
+  --sidebar: #FFFFFF;
+  --sidebar-border: var(--border);
 }
 
 .dark {
