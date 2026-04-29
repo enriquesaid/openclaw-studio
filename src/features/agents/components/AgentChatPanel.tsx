@@ -362,7 +362,7 @@ const UserMessageCard = memo(function UserMessageCard({
       style={MESSAGE_CONTENT_VISIBILITY_STYLE}
       {...(testId ? { "data-testid": testId } : {})}
     >
-      <div className={`${ASSISTANT_MAX_WIDTH_DEFAULT_CLASS} flex flex-col gap-2`}>
+      <div className={`w-full max-w-full min-w-0 overflow-hidden ${ASSISTANT_MAX_WIDTH_DEFAULT_CLASS} flex flex-col gap-2`}>
         <div className="flex items-baseline justify-end gap-2 border-b border-border pb-1.5">
           {typeof timestampMs === "number" ? (
             <time className="font-mono text-[9px] font-bold uppercase tracking-widest text-muted-foreground/30">
@@ -838,7 +838,7 @@ const AgentChatTranscript = memo(function AgentChatTranscript({
           event.stopPropagation();
         }}
       >
-        <div className="relative flex min-w-0 flex-col gap-4 text-[14px] leading-[1.65] text-foreground sm:gap-6 dark:gap-5 dark:sm:gap-8">
+        <div className="relative flex w-full max-w-full min-w-0 flex-col gap-4 overflow-hidden text-[14px] leading-[1.65] text-foreground sm:gap-6 dark:gap-5 dark:sm:gap-8">
           <div aria-hidden className={`pointer-events-none absolute ${SPINE_LEFT} top-0 bottom-0 w-px bg-border/20`} />
           {showLoadMoreBanner ? (
             <div className={`flex flex-col items-start gap-4 border-b border-border pb-6 sm:flex-row sm:items-center sm:justify-between ${ASSISTANT_GUTTER_CLASS}`}>
@@ -1607,7 +1607,7 @@ export const AgentChatPanel = ({
 
   return (
     <div data-agent-panel className="group fade-up relative flex h-full w-full min-w-0 flex-col overflow-hidden bg-background">
-      <header className="sticky top-0 z-30 border-b border-border/40 bg-background/90 px-5 py-3 backdrop-blur-xl sm:px-6 sm:py-3.5">
+      <header className="sticky top-0 z-30 border-b border-border/40 bg-background/90 px-3 py-2.5 backdrop-blur-xl sm:px-6 sm:py-3.5">
         <div className="flex items-center justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3">
             {onBackToFleet ? (
@@ -1683,7 +1683,7 @@ export const AgentChatPanel = ({
 
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
             <button
-              className="ui-btn-icon h-8 w-8 md:hidden"
+              className="ui-btn-icon h-8 w-8 sm:hidden"
               type="button"
               aria-label="Expand transcript"
               title="Expand transcript"
@@ -1692,7 +1692,7 @@ export const AgentChatPanel = ({
               <Maximize2 className="h-4 w-4" />
             </button>
             <button
-              className="nodrag flex h-8 items-center justify-center rounded-lg border border-border/50 bg-surface-2 px-3.5 text-[11px] font-semibold tracking-tight text-foreground transition-all hover:bg-surface-3 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+              className="nodrag flex h-8 items-center justify-center rounded-lg border border-border/50 bg-surface-2 px-2.5 sm:px-3.5 text-[11px] font-semibold tracking-tight text-foreground transition-all hover:bg-surface-3 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
               type="button"
               data-testid="agent-new-session-toggle"
               aria-label="Start new session"
@@ -1700,7 +1700,8 @@ export const AgentChatPanel = ({
               onClick={() => { void handleNewSession(); }}
               disabled={newSessionDisabled}
             >
-              <span>{newSessionBusy ? "…" : "New session"}</span>
+              <span className="hidden sm:inline">{newSessionBusy ? "…" : "New session"}</span>
+              <span className="sm:hidden">{newSessionBusy ? "…" : "New"}</span>
             </button>
             <button
               className="nodrag ui-btn-icon h-8 w-8 rounded-lg border border-border/40 bg-surface-2/50"
@@ -1782,7 +1783,7 @@ export const AgentChatPanel = ({
       </div>
 
       {transcriptModalOpen ? (
-        <div className="fixed inset-0 z-[130] flex min-h-0 flex-col bg-background md:hidden">
+        <div className="fixed inset-0 z-[130] flex min-h-0 flex-col bg-background sm:hidden">
           <div className="flex items-center justify-between border-b border-border/60 px-3 py-2">
             <div className="truncate text-sm font-medium text-foreground">{agent.name} · Transcript</div>
             <button
