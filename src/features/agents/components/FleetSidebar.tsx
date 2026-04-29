@@ -1,4 +1,4 @@
-import { ArrowUpRight, ChevronUp, Home, Plus, Plug } from "lucide-react";
+import { ChevronUp, Home, Plus } from "lucide-react";
 import type { AgentState, FocusFilter } from "@/features/agents/state/store";
 import type { GatewayStatus } from "@/lib/gateway/gateway-status";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -39,7 +39,7 @@ export const FleetSidebar = ({
   onAvatarShuffle,
   createDisabled = false,
   createBusy = false,
-  showConnectionSettings = true,
+  showConnectionSettings: _showConnectionSettings,
 }: FleetSidebarProps) => {
   const rowRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
   const previousTopByAgentIdRef = useRef<Map<string, number>>(new Map());
@@ -131,18 +131,6 @@ export const FleetSidebar = ({
           <span className="absolute right-3 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-full bg-[#7C3AED] dark:bg-primary" aria-hidden="true" />
         </div>
 
-        {showConnectionSettings ? (
-          <button
-            type="button"
-            className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-muted-foreground transition-all hover:bg-surface-2 hover:text-foreground"
-            onClick={onConnectionSettings}
-            data-testid="gateway-settings-toggle"
-          >
-            <Plug className="h-4 w-4 shrink-0" />
-            Connection
-          </button>
-        ) : null}
-
         <button
           type="button"
           className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-muted-foreground transition-all hover:bg-surface-2 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
@@ -212,17 +200,14 @@ export const FleetSidebar = ({
 
       {/* Bottom */}
       <div className="mt-auto px-4 pb-6">
-        {/* FAQs link */}
+        {/* Gateway status card — click to open connection settings */}
         <button
           type="button"
-          className="mb-4 flex items-center gap-1 px-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+          className="flex w-full items-center gap-3 rounded-xl border border-border bg-card px-3 py-2.5 text-left transition-all hover:bg-surface-2"
           onClick={onConnectionSettings}
+          data-testid="gateway-settings-toggle"
+          aria-label="Open connection settings"
         >
-          FAQs <ArrowUpRight className="h-3 w-3" />
-        </button>
-
-        {/* Gateway status card */}
-        <div className="flex items-center gap-3 rounded-xl border border-border bg-card px-3 py-2.5">
           <div className="min-w-0 flex-1">
             <p className="text-xs font-semibold text-foreground">Gateway</p>
             <p className="text-[10px] text-muted-foreground">
@@ -240,7 +225,7 @@ export const FleetSidebar = ({
             <ThemeToggle />
             <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" />
           </div>
-        </div>
+        </button>
       </div>
     </aside>
   );
