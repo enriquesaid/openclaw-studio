@@ -894,6 +894,7 @@ textarea:focus::-webkit-scrollbar {
 
 .ui-chat-user-card {
   max-width: 100%;
+  overflow-x: hidden;
   border-radius: 8px;
   background: var(--chat-user-bg);
   color: var(--chat-user-fg);
@@ -909,6 +910,7 @@ textarea:focus::-webkit-scrollbar {
 
 .ui-chat-assistant-card {
   max-width: 100%;
+  overflow-x: hidden;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--card);

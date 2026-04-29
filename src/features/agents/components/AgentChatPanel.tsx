@@ -171,14 +171,14 @@ const ExecApprovalCard = memo(function ExecApprovalCard({
   const disabled = approval.resolving || !onResolve;
   return (
     <div
-      className={`w-full ${ASSISTANT_MAX_WIDTH_EXPANDED_CLASS} ${ASSISTANT_GUTTER_CLASS} ui-badge-approval self-start rounded-md px-3 py-2 shadow-2xs`}
+      className={`w-full min-w-0 overflow-x-hidden ${ASSISTANT_MAX_WIDTH_EXPANDED_CLASS} ${ASSISTANT_GUTTER_CLASS} ui-badge-approval self-start rounded-md px-3 py-2 shadow-2xs`}
       data-testid={`exec-approval-card-${approval.id}`}
     >
       <div className="type-meta">
         Exec approval required
       </div>
       <div className="mt-2 rounded-md bg-surface-3 px-2 py-1.5 shadow-2xs">
-        <div className="font-mono text-[10px] font-semibold text-foreground">{approval.command}</div>
+        <div className="font-mono text-[10px] font-semibold break-all text-foreground">{approval.command}</div>
       </div>
       <div className="mt-2 grid gap-1 text-[11px] text-muted-foreground sm:grid-cols-2">
         <div>Host: {approval.host ?? "unknown"}</div>
@@ -234,7 +234,7 @@ const ToolCallDetails = memo(function ToolCallDetails({
   const [open, setOpen] = useState(false);
   const resolvedClassName =
     className ??
-    `w-full ${ASSISTANT_MAX_WIDTH_EXPANDED_CLASS} ${ASSISTANT_GUTTER_CLASS} self-start rounded-md bg-surface-3 px-2 py-1 text-[10px] text-muted-foreground shadow-2xs`;
+    `w-full min-w-0 overflow-x-hidden ${ASSISTANT_MAX_WIDTH_EXPANDED_CLASS} ${ASSISTANT_GUTTER_CLASS} self-start rounded-md bg-surface-3 px-2 py-1 text-[10px] text-muted-foreground shadow-2xs`;
   if (inlineOnly) {
     return (
       <div className={resolvedClassName}>
@@ -294,7 +294,7 @@ const ThinkingDetailsRow = memo(function ThinkingDetailsRow({
   return (
     <details
       open={open}
-      className="ui-chat-thinking group rounded-md px-2 py-1.5 text-[10px] shadow-2xs"
+      className="ui-chat-thinking group w-full min-w-0 rounded-md px-2 py-1.5 text-[10px] shadow-2xs"
     >
       <summary
         className="flex cursor-pointer list-none items-center gap-2 opacity-65 [&::-webkit-details-marker]:hidden"
@@ -324,7 +324,7 @@ const ThinkingDetailsRow = memo(function ThinkingDetailsRow({
         </span>
       </summary>
       {open ? (
-        <div className="mt-2 space-y-2 pl-5">
+        <div className="mt-2 min-w-0 overflow-x-hidden space-y-2 pl-5">
           {traceEvents.map((event, index) =>
             event.kind === "thinking" ? (
               <div
@@ -337,7 +337,7 @@ const ThinkingDetailsRow = memo(function ThinkingDetailsRow({
               <ToolCallDetails
                 key={`thinking-tool-${index}-${event.text.slice(0, 48)}`}
                 line={event.text}
-                className="rounded-md border border-border/45 bg-surface-2/65 px-2 py-1 text-[10px] text-muted-foreground/90 shadow-2xs"
+                className="w-full min-w-0 overflow-x-hidden rounded-md border border-border/45 bg-surface-2/65 px-2 py-1 text-[10px] text-muted-foreground/90 shadow-2xs"
               />
             )
           )}
@@ -424,7 +424,7 @@ const AssistantMessageCard = memo(function AssistantMessageCard({
       style={MESSAGE_CONTENT_VISIBILITY_STYLE}
       {...(testId ? { "data-testid": testId } : {})}
     >
-      <div className={`relative w-full ${widthClass} ${ASSISTANT_GUTTER_CLASS}`}>
+      <div className={`relative w-full min-w-0 overflow-x-hidden ${widthClass} ${ASSISTANT_GUTTER_CLASS}`}>
         <div className="absolute left-[4px] top-[2px]">
           <AgentAvatar seed={avatarSeed} name={name} avatarUrl={avatarUrl} size={22} />
         </div>
@@ -456,7 +456,7 @@ const AssistantMessageCard = memo(function AssistantMessageCard({
             </span>
           </div>
         ) : (
-          <div className="mt-2 space-y-3 dark:space-y-5">
+          <div className="mt-2 min-w-0 overflow-x-hidden space-y-3 dark:space-y-5">
             {streaming && !hasThinking ? (
               <div
                 className="flex items-center gap-2 text-[10px] text-muted-foreground/80"
@@ -539,7 +539,7 @@ const AssistantIntroCard = memo(function AssistantIntroCard({
 }) {
   return (
     <div className="w-full self-start">
-      <div className={`relative w-full ${ASSISTANT_MAX_WIDTH_DEFAULT_CLASS} ${ASSISTANT_GUTTER_CLASS}`}>
+      <div className={`relative w-full min-w-0 overflow-x-hidden ${ASSISTANT_MAX_WIDTH_DEFAULT_CLASS} ${ASSISTANT_GUTTER_CLASS}`}>
         <div className="absolute left-[4px] top-[2px]">
           <AgentAvatar seed={avatarSeed} name={name} avatarUrl={avatarUrl} size={22} />
         </div>
