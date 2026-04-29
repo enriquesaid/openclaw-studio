@@ -1145,15 +1145,6 @@ const AgentChatComposer = memo(function AgentChatComposer({
 
       </div>
       <div className="mt-2.5 flex flex-wrap items-center gap-2.5 sm:mt-2 sm:gap-3">
-        {/* "+" icon — placeholder for future attachment / action */}
-        <button
-          type="button"
-          aria-label="More actions"
-          className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border/60 bg-surface-2/50 text-muted-foreground transition-all hover:bg-surface-3 hover:text-foreground"
-        >
-          <span className="text-base leading-none">+</span>
-        </button>
-
         <div className="flex min-w-0 flex-wrap items-center gap-2">
           <InlineHoverTooltip text="Choose model">
             <select
@@ -1750,7 +1741,7 @@ export const AgentChatPanel = ({
           />
         </div>
 
-        <div className="relative z-20 mt-3">
+        <div className="relative z-20 mt-3 shrink-0">
           <AgentChatComposer
             value={draftValue}
             inputRef={handleDraftRef}
