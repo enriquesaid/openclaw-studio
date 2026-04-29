@@ -1728,7 +1728,6 @@ const AgentStudioPage = () => {
                             focusedAgent.runId
                           )
                         }
-                        onAvatarShuffle={() => handleAvatarShuffle(focusedAgent.agentId)}
                         onBackToFleet={() => setMobilePane("fleet")}
                         pendingExecApprovals={focusedPendingExecApprovals}
                         onResolveExecApproval={(id, decision) => {

@@ -146,7 +146,6 @@ type AgentChatPanelProps = {
   onSend: (message: string) => void;
   onRemoveQueuedMessage?: (index: number) => void;
   onStopRun: () => void;
-  onAvatarShuffle: () => void;
   onBackToFleet?: () => void;
   pendingExecApprovals?: PendingExecApproval[];
   onResolveExecApproval?: (id: string, decision: ExecApprovalDecision) => void;
@@ -1255,7 +1254,6 @@ export const AgentChatPanel = ({
   onSend,
   onRemoveQueuedMessage,
   onStopRun,
-  onAvatarShuffle: _onAvatarShuffle,
   onBackToFleet,
   pendingExecApprovals = [],
   onResolveExecApproval,
