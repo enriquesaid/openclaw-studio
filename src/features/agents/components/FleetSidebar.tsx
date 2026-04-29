@@ -222,7 +222,7 @@ export const FleetSidebar = ({
             >
               {resolveGatewayStatusLabel(gatewayStatus)}
             </span>
-            <ThemeToggle />
+            <span onClick={(e) => { e.stopPropagation(); }}><ThemeToggle /></span>
             <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" />
           </div>
         </button>
