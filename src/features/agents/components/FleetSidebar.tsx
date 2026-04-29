@@ -1,5 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { Cog, Pencil, Plug, Shuffle } from "lucide-react";
+import { ChevronUp, Home, Plus } from "lucide-react";
 import type { AgentState, FocusFilter } from "@/features/agents/state/store";
 import type { GatewayStatus } from "@/lib/gateway/gateway-status";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -11,7 +10,7 @@ import {
   resolveGatewayStatusBadgeClass,
   resolveGatewayStatusLabel,
 } from "./colorSemantics";
-import { EmptyStatePanel } from "./EmptyStatePanel";
+import { useLayoutEffect, useMemo, useRef } from "react";
 
 type FleetSidebarProps = {
   agents: AgentState[];
@@ -22,70 +21,38 @@ type FleetSidebarProps = {
   onSelectAgent: (agentId: string) => void;
   onCreateAgent: () => void;
   onConnectionSettings: () => void;
+  onAvatarShuffle?: () => void;
   createDisabled?: boolean;
   createBusy?: boolean;
   showConnectionSettings?: boolean;
 };
 
-const FILTER_OPTIONS: Array<{ value: FocusFilter; label: string; testId: string }> = [
-  { value: "all", label: "All", testId: "fleet-filter-all" },
-  { value: "running", label: "Running", testId: "fleet-filter-running" },
-  { value: "approvals", label: "Approvals", testId: "fleet-filter-approvals" },
-];
-
 export const FleetSidebar = ({
   agents,
   selectedAgentId,
-  filter,
+  filter: _filter,
   gatewayStatus,
-  onFilterChange,
+  onFilterChange: _onFilterChange,
   onSelectAgent,
   onCreateAgent,
   onConnectionSettings,
+  onAvatarShuffle,
   createDisabled = false,
   createBusy = false,
-  showConnectionSettings = true,
+  showConnectionSettings: _showConnectionSettings,
 }: FleetSidebarProps) => {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement | null>(null);
   const rowRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
   const previousTopByAgentIdRef = useRef<Map<string, number>>(new Map());
-  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
   const agentOrderKey = useMemo(() => agents.map((agent) => agent.agentId).join("|"), [agents]);
 
-  useEffect(() => {
-    if (!menuOpen) return;
-    const onPointerDown = (event: MouseEvent) => {
-      if (!menuRef.current) return;
-      if (menuRef.current.contains(event.target as Node)) return;
-      setMenuOpen(false);
-    };
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setMenuOpen(false);
-    };
-    document.addEventListener("mousedown", onPointerDown);
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("mousedown", onPointerDown);
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [menuOpen]);
-
   useLayoutEffect(() => {
-    const scroller = scrollContainerRef.current;
-    if (!scroller) return;
-    const scrollerRect = scroller.getBoundingClientRect();
-
-    const getTopInScrollContent = (node: HTMLElement) =>
-      node.getBoundingClientRect().top - scrollerRect.top + scroller.scrollTop;
-
     const nextTopByAgentId = new Map<string, number>();
     const agentIds = agentOrderKey.length === 0 ? [] : agentOrderKey.split("|");
     for (const agentId of agentIds) {
       const node = rowRefs.current.get(agentId);
       if (!node) continue;
-      const nextTop = getTopInScrollContent(node);
+      const nextTop = node.getBoundingClientRect().top;
       nextTopByAgentId.set(agentId, nextTop);
       const previousTop = previousTopByAgentIdRef.current.get(agentId);
       if (typeof previousTop !== "number") continue;
@@ -100,52 +67,91 @@ export const FleetSidebar = ({
     previousTopByAgentIdRef.current = nextTopByAgentId;
   }, [agentOrderKey]);
 
+  const selectedAgent = useMemo(
+    () => agents.find((a) => a.agentId === selectedAgentId) ?? agents[0] ?? null,
+    [agents, selectedAgentId]
+  );
+
   return (
     <aside
-      className="fade-up-delay relative flex h-full w-full min-w-72 flex-col bg-sidebar xl:max-w-[320px] xl:bg-transparent"
+      className="fade-up-delay relative flex h-full w-full min-w-72 flex-col bg-sidebar xl:max-w-[320px]"
       data-testid="fleet-sidebar"
     >
-      <div className="flex flex-col gap-6 p-6 pb-0">
-        <div className="flex items-center justify-between gap-2">
-          <p className="font-display text-2xl font-medium tracking-tight text-foreground italic">Agents <span className="font-mono text-sm not-italic opacity-40">({agents.length})</span></p>
+      {/* Agent profile */}
+      <div className="flex flex-col items-center px-6 pt-10 pb-6">
+        {selectedAgent ? (
+          <>
+            <div className="group/avatar relative">
+              <AgentAvatar
+                seed={selectedAgent.avatarSeed ?? selectedAgent.agentId}
+                name={selectedAgent.name}
+                avatarUrl={selectedAgent.avatarUrl ?? null}
+                size={100}
+                isSelected={false}
+              />
+              {onAvatarShuffle ? (
+                <button
+                  className="absolute -bottom-0.5 -right-0.5 flex h-6 w-6 items-center justify-center rounded-full border border-border/60 bg-card/90 text-muted-foreground opacity-0 shadow-sm backdrop-blur-sm transition-all group-hover/avatar:opacity-100 hover:scale-110 hover:text-foreground active:scale-95"
+                  type="button"
+                  aria-label="Shuffle avatar"
+                  data-testid="agent-avatar-shuffle"
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); onAvatarShuffle(); }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
+                </button>
+              ) : null}
+            </div>
+            <div className="mt-4 text-center">
+              {selectedAgent.lastActivityAt ? (
+                <p className="font-mono text-[10px] tracking-wide text-muted-foreground">
+                  Active{" "}
+                  {new Intl.DateTimeFormat(undefined, {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  }).format(new Date(selectedAgent.lastActivityAt))}
+                </p>
+              ) : null}
+              <p className="mt-1 font-display text-xl font-bold uppercase tracking-tight text-foreground">
+                {selectedAgent.name}
+              </p>
+            </div>
+          </>
+        ) : (
+          <div className="text-center text-sm text-muted-foreground">No agent selected</div>
+        )}
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex flex-col gap-0.5 px-3" aria-label="Sidebar navigation">
+        {/* Home – always the active view */}
+        <div className="relative flex items-center gap-3 rounded-xl bg-[#EDE9FE] px-4 py-3 text-[#5B21B6] dark:bg-primary/15 dark:text-primary">
+          <Home className="h-4 w-4 shrink-0" />
+          <span className="text-sm font-semibold">Home</span>
+          <span className="absolute right-3 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-full bg-[#7C3AED] dark:bg-primary" aria-hidden="true" />
         </div>
 
         <button
           type="button"
-          data-testid="fleet-new-agent-button"
-          className="ui-btn-primary w-full px-4 py-2.5 font-sans text-xs font-bold tracking-wider uppercase disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-muted-foreground transition-all hover:bg-surface-2 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
           onClick={onCreateAgent}
           disabled={createDisabled || createBusy}
+          data-testid="fleet-new-agent-button"
         >
-          {createBusy ? "Creating..." : "Launch New Agent"}
+          <Plus className="h-4 w-4 shrink-0" />
+          {createBusy ? "Creating…" : "New agent"}
         </button>
+      </nav>
 
-        <div className="grid grid-cols-3 border-b border-border pb-1">
-          {FILTER_OPTIONS.map((option) => {
-            const active = filter === option.value;
-            return (
-              <button
-                key={option.value}
-                type="button"
-                data-testid={option.testId}
-                aria-pressed={active}
-                className={`pb-2 font-mono text-[10px] font-bold uppercase tracking-widest transition-colors ${active ? "text-foreground border-b-2 border-foreground -mb-[1px]" : "text-muted-foreground hover:text-foreground"}`}
-                onClick={() => onFilterChange(option.value)}
-              >
-                {option.label}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="ui-scroll min-h-0 flex-1 overflow-auto">
-        {agents.length === 0 ? (
-          <EmptyStatePanel title="No agents available." compact className="py-8 px-6 text-xs" />
-        ) : (
-          <div className="flex flex-col">
+      {/* Compact agent switcher (only when there are multiple agents) */}
+      {agents.length > 1 ? (
+        <div className="mt-5 px-3">
+          <p className="mb-1.5 px-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+            Agents <span className="font-mono opacity-60">({agents.length})</span>
+          </p>
+          <div className="flex max-h-52 flex-col gap-0.5 overflow-y-auto">
             {agents.map((agent) => {
-              const selected = selectedAgentId === agent.agentId;
+              const selected = agent.agentId === selectedAgentId;
               const avatarSeed = agent.avatarSeed ?? agent.agentId;
               return (
                 <button
@@ -153,102 +159,73 @@ export const FleetSidebar = ({
                   ref={(node) => {
                     if (node) {
                       rowRefs.current.set(agent.agentId, node);
-                      return;
+                    } else {
+                      rowRefs.current.delete(agent.agentId);
                     }
-                    rowRefs.current.delete(agent.agentId);
                   }}
                   type="button"
                   data-testid={`fleet-agent-row-${agent.agentId}`}
-                  className={`group relative flex w-full items-center gap-4 border-b border-border px-6 py-5 text-left transition-all ${
-                    selected
-                      ? "bg-surface-2 z-10"
-                      : "hover:bg-surface-2"
+                  className={`group flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-left transition-all ${
+                    selected ? "bg-surface-2 font-semibold" : "hover:bg-surface-2"
                   }`}
                   onClick={() => onSelectAgent(agent.agentId)}
                 >
-                  {selected && (
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-foreground" />
-                  )}
                   <AgentAvatar
                     seed={avatarSeed}
                     name={agent.name}
                     avatarUrl={agent.avatarUrl ?? null}
-                    size={44}
+                    size={28}
                     isSelected={selected}
                   />
                   <div className="min-w-0 flex-1">
-                    <p className={`truncate text-[15px] tracking-tight text-foreground ${selected ? "font-bold" : "font-semibold"}`}>
-                      {agent.name}
-                    </p>
-                    <div className="mt-1 flex flex-wrap items-center gap-2">
-                      <span
-                        className={`ui-badge text-[9px] px-1.5 py-0.5 rounded-sm font-bold uppercase tracking-wider ${resolveAgentStatusBadgeClass(agent.status)}`}
-                        data-status={agent.status}
-                      >
-                        {resolveAgentStatusLabel(agent.status)}
-                      </span>
-                      {agent.awaitingUserInput ? (
-                        <span className={`ui-badge text-[9px] px-1.5 py-0.5 rounded-sm font-bold uppercase tracking-wider ${NEEDS_APPROVAL_BADGE_CLASS}`} data-status="approval">
-                          Action Required
-                        </span>
-                      ) : null}
-                    </div>
+                    <p className="truncate text-[13px] font-medium text-foreground">{agent.name}</p>
                   </div>
+                  <span
+                    className={`ui-badge shrink-0 text-[9px] px-1.5 py-0.5 rounded-sm font-bold uppercase tracking-wider ${resolveAgentStatusBadgeClass(agent.status)}`}
+                    data-status={agent.status}
+                  >
+                    {resolveAgentStatusLabel(agent.status)}
+                  </span>
+                  {agent.awaitingUserInput ? (
+                    <span className={`ui-badge shrink-0 text-[9px] px-1.5 py-0.5 rounded-sm font-bold uppercase tracking-wider ${NEEDS_APPROVAL_BADGE_CLASS}`} data-status="approval">
+                      !
+                    </span>
+                  ) : null}
                 </button>
               );
             })}
           </div>
-        )}
-      </div>
+        </div>
+      ) : null}
 
-      <div className="mt-auto border-t border-border p-6">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
+      {/* Bottom */}
+      <div className="mt-auto px-4 pb-6">
+        {/* Gateway status card — click to open connection settings */}
+        <button
+          type="button"
+          className="flex w-full items-center gap-3 rounded-xl border border-border bg-card px-3 py-2.5 text-left transition-all hover:bg-surface-2"
+          onClick={onConnectionSettings}
+          data-testid="gateway-settings-toggle"
+          aria-label="Open connection settings"
+        >
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-semibold text-foreground">Gateway</p>
+            <p className="text-[10px] text-muted-foreground">
+              {resolveGatewayStatusLabel(gatewayStatus)}
+            </p>
+          </div>
+          <div className="flex shrink-0 items-center gap-2">
             <span
-              className={`ui-badge rounded-sm px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-widest ${resolveGatewayStatusBadgeClass(gatewayStatus)}`}
+              className={`ui-badge rounded-sm px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-widest ${resolveGatewayStatusBadgeClass(gatewayStatus)}`}
               data-testid="gateway-status-indicator"
               data-status={gatewayStatus}
             >
               {resolveGatewayStatusLabel(gatewayStatus)}
             </span>
-            <ThemeToggle />
+            <span onClick={(e) => { e.stopPropagation(); }}><ThemeToggle /></span>
+            <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" />
           </div>
-
-          {showConnectionSettings ? (
-            <div className="relative" ref={menuRef}>
-              <button
-                type="button"
-                className="ui-btn-icon h-8 w-8 rounded-md border border-border bg-card transition-all hover:bg-surface-3"
-                data-testid="studio-menu-toggle"
-                aria-haspopup="menu"
-                aria-expanded={menuOpen}
-                onClick={() => setMenuOpen((prev) => !prev)}
-              >
-                <Cog className="h-4 w-4" />
-                <span className="sr-only">Open studio menu</span>
-              </button>
-              {menuOpen ? (
-                <div className="ui-card ui-menu-popover absolute bottom-10 right-0 z-[260] min-w-56 overflow-hidden border border-border p-1 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-200">
-                  <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                    Management
-                  </div>
-                  <button
-                    className="ui-btn-ghost w-full justify-start gap-2 rounded-md px-3 py-2 text-left text-xs font-medium text-foreground transition-all hover:bg-surface-3"
-                    type="button"
-                    onClick={() => {
-                      onConnectionSettings();
-                      setMenuOpen(false);
-                    }}
-                    data-testid="gateway-settings-toggle"
-                  >
-                    <Plug className="h-3.5 w-3.5" />
-                    Gateway connection
-                  </button>
-                </div>
-              ) : null}
-            </div>
-          ) : null}
-        </div>
+        </button>
       </div>
     </aside>
   );

@@ -14,7 +14,7 @@ import {
 import type { AgentState as AgentRecord } from "@/features/agents/state/store";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Check, ChevronLeft, ChevronRight, Clock, Cog, Maximize2, Pencil, Shuffle, Trash2, X } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Clock, Cog, Maximize2, Pencil, Trash2, X } from "lucide-react";
 import type { GatewayModelChoice } from "@/lib/gateway/models";
 import { rewriteMediaLinesToMarkdown } from "@/lib/text/media-markdown";
 import { normalizeAssistantDisplayText } from "@/lib/text/assistantText";
@@ -146,7 +146,6 @@ type AgentChatPanelProps = {
   onSend: (message: string) => void;
   onRemoveQueuedMessage?: (index: number) => void;
   onStopRun: () => void;
-  onAvatarShuffle: () => void;
   onBackToFleet?: () => void;
   pendingExecApprovals?: PendingExecApproval[];
   onResolveExecApproval?: (id: string, decision: ExecApprovalDecision) => void;
@@ -172,14 +171,14 @@ const ExecApprovalCard = memo(function ExecApprovalCard({
   const disabled = approval.resolving || !onResolve;
   return (
     <div
-      className={`w-full ${ASSISTANT_MAX_WIDTH_EXPANDED_CLASS} ${ASSISTANT_GUTTER_CLASS} ui-badge-approval self-start rounded-md px-3 py-2 shadow-2xs`}
+      className={`w-full min-w-0 overflow-x-hidden ${ASSISTANT_MAX_WIDTH_EXPANDED_CLASS} ${ASSISTANT_GUTTER_CLASS} ui-badge-approval self-start rounded-md px-3 py-2 shadow-2xs`}
       data-testid={`exec-approval-card-${approval.id}`}
     >
       <div className="type-meta">
         Exec approval required
       </div>
       <div className="mt-2 rounded-md bg-surface-3 px-2 py-1.5 shadow-2xs">
-        <div className="font-mono text-[10px] font-semibold text-foreground">{approval.command}</div>
+        <div className="font-mono text-[10px] font-semibold break-all text-foreground">{approval.command}</div>
       </div>
       <div className="mt-2 grid gap-1 text-[11px] text-muted-foreground sm:grid-cols-2">
         <div>Host: {approval.host ?? "unknown"}</div>
@@ -235,7 +234,7 @@ const ToolCallDetails = memo(function ToolCallDetails({
   const [open, setOpen] = useState(false);
   const resolvedClassName =
     className ??
-    `w-full ${ASSISTANT_MAX_WIDTH_EXPANDED_CLASS} ${ASSISTANT_GUTTER_CLASS} self-start rounded-md bg-surface-3 px-2 py-1 text-[10px] text-muted-foreground shadow-2xs`;
+    `w-full min-w-0 overflow-x-hidden ${ASSISTANT_MAX_WIDTH_EXPANDED_CLASS} ${ASSISTANT_GUTTER_CLASS} self-start rounded-md bg-surface-3 px-2 py-1 text-[10px] text-muted-foreground shadow-2xs`;
   if (inlineOnly) {
     return (
       <div className={resolvedClassName}>
@@ -295,7 +294,7 @@ const ThinkingDetailsRow = memo(function ThinkingDetailsRow({
   return (
     <details
       open={open}
-      className="ui-chat-thinking group rounded-md px-2 py-1.5 text-[10px] shadow-2xs"
+      className="ui-chat-thinking group w-full min-w-0 rounded-md px-2 py-1.5 text-[10px] shadow-2xs"
     >
       <summary
         className="flex cursor-pointer list-none items-center gap-2 opacity-65 [&::-webkit-details-marker]:hidden"
@@ -325,7 +324,7 @@ const ThinkingDetailsRow = memo(function ThinkingDetailsRow({
         </span>
       </summary>
       {open ? (
-        <div className="mt-2 space-y-2 pl-5">
+        <div className="mt-2 min-w-0 overflow-x-hidden space-y-2 pl-5">
           {traceEvents.map((event, index) =>
             event.kind === "thinking" ? (
               <div
@@ -338,7 +337,7 @@ const ThinkingDetailsRow = memo(function ThinkingDetailsRow({
               <ToolCallDetails
                 key={`thinking-tool-${index}-${event.text.slice(0, 48)}`}
                 line={event.text}
-                className="rounded-md border border-border/45 bg-surface-2/65 px-2 py-1 text-[10px] text-muted-foreground/90 shadow-2xs"
+                className="w-full min-w-0 overflow-x-hidden rounded-md border border-border/45 bg-surface-2/65 px-2 py-1 text-[10px] text-muted-foreground/90 shadow-2xs"
               />
             )
           )}
@@ -363,7 +362,7 @@ const UserMessageCard = memo(function UserMessageCard({
       style={MESSAGE_CONTENT_VISIBILITY_STYLE}
       {...(testId ? { "data-testid": testId } : {})}
     >
-      <div className={`${ASSISTANT_MAX_WIDTH_DEFAULT_CLASS} flex flex-col gap-2`}>
+      <div className={`w-full max-w-full min-w-0 overflow-hidden ${ASSISTANT_MAX_WIDTH_DEFAULT_CLASS} flex flex-col gap-2`}>
         <div className="flex items-baseline justify-end gap-2 border-b border-border pb-1.5">
           {typeof timestampMs === "number" ? (
             <time className="font-mono text-[9px] font-bold uppercase tracking-widest text-muted-foreground/30">
@@ -425,7 +424,7 @@ const AssistantMessageCard = memo(function AssistantMessageCard({
       style={MESSAGE_CONTENT_VISIBILITY_STYLE}
       {...(testId ? { "data-testid": testId } : {})}
     >
-      <div className={`relative w-full ${widthClass} ${ASSISTANT_GUTTER_CLASS}`}>
+      <div className={`relative w-full min-w-0 overflow-x-hidden ${widthClass} ${ASSISTANT_GUTTER_CLASS}`}>
         <div className="absolute left-[4px] top-[2px]">
           <AgentAvatar seed={avatarSeed} name={name} avatarUrl={avatarUrl} size={22} />
         </div>
@@ -457,7 +456,7 @@ const AssistantMessageCard = memo(function AssistantMessageCard({
             </span>
           </div>
         ) : (
-          <div className="mt-2 space-y-3 dark:space-y-5">
+          <div className="mt-2 min-w-0 overflow-x-hidden space-y-3 dark:space-y-5">
             {streaming && !hasThinking ? (
               <div
                 className="flex items-center gap-2 text-[10px] text-muted-foreground/80"
@@ -540,7 +539,7 @@ const AssistantIntroCard = memo(function AssistantIntroCard({
 }) {
   return (
     <div className="w-full self-start">
-      <div className={`relative w-full ${ASSISTANT_MAX_WIDTH_DEFAULT_CLASS} ${ASSISTANT_GUTTER_CLASS}`}>
+      <div className={`relative w-full min-w-0 overflow-x-hidden ${ASSISTANT_MAX_WIDTH_DEFAULT_CLASS} ${ASSISTANT_GUTTER_CLASS}`}>
         <div className="absolute left-[4px] top-[2px]">
           <AgentAvatar seed={avatarSeed} name={name} avatarUrl={avatarUrl} size={22} />
         </div>
@@ -839,7 +838,7 @@ const AgentChatTranscript = memo(function AgentChatTranscript({
           event.stopPropagation();
         }}
       >
-        <div className="relative flex min-w-0 flex-col gap-4 text-[14px] leading-[1.65] text-foreground sm:gap-6 dark:gap-5 dark:sm:gap-8">
+        <div className="relative flex w-full max-w-full min-w-0 flex-col gap-4 overflow-hidden text-[14px] leading-[1.65] text-foreground sm:gap-6 dark:gap-5 dark:sm:gap-8">
           <div aria-hidden className={`pointer-events-none absolute ${SPINE_LEFT} top-0 bottom-0 w-px bg-border/20`} />
           {showLoadMoreBanner ? (
             <div className={`flex flex-col items-start gap-4 border-b border-border pb-6 sm:flex-row sm:items-center sm:justify-between ${ASSISTANT_GUTTER_CLASS}`}>
@@ -1053,8 +1052,7 @@ const AgentChatComposer = memo(function AgentChatComposer({
   }, [thinkingValue]);
   const thinkingSelectWidthCh = Math.max(9, Math.min(16, thinkingSelectedLabel.length + 6));
   return (
-    <div className="w-full max-w-full overflow-hidden rounded-2xl border border-border/40 bg-card px-3 py-2 shadow-sm">
-      {queuedMessages.length > 0 ? (
+    <div className="w-full max-w-full overflow-hidden rounded-2xl border border-border/40 bg-card px-3 py-2 shadow-sm">      {queuedMessages.length > 0 ? (
         <div
           className={`mb-2 grid items-start gap-2 ${
             running ? "grid-cols-[minmax(0,1fr)_auto_auto]" : "grid-cols-[minmax(0,1fr)_auto]"
@@ -1121,7 +1119,7 @@ const AgentChatComposer = memo(function AgentChatComposer({
           className="chat-composer-input min-h-[28px] max-h-[34vh] min-w-0 flex-1 resize-none border-0 bg-transparent px-0 py-1 text-[16px] leading-6 text-foreground outline-none shadow-none transition placeholder:text-muted-foreground/65 focus:outline-none focus-visible:outline-none focus-visible:ring-0 sm:text-[15px]"
           onChange={onChange}
           onKeyDown={onKeyDown}
-          placeholder="type a message"
+          placeholder="Message…"
         />
         {running ? (
           <span className="inline-flex" title={stopReason || undefined}>
@@ -1150,7 +1148,7 @@ const AgentChatComposer = memo(function AgentChatComposer({
         <div className="flex min-w-0 flex-wrap items-center gap-2">
           <InlineHoverTooltip text="Choose model">
             <select
-              className="ui-input ui-control-important h-7 min-w-0 max-w-full rounded-md px-2 text-[11px] font-semibold text-foreground transition-all hover:border-primary/50"
+              className="ui-input ui-control-important h-7 min-w-0 max-w-full rounded-full border border-border/60 px-3 text-[11px] font-semibold text-foreground transition-all hover:border-primary/50"
               aria-label="Model"
               value={modelValue}
               style={{ width: `${modelSelectWidthCh}ch`, maxWidth: "clamp(12ch, 58vw, 30ch)" }}
@@ -1173,7 +1171,7 @@ const AgentChatComposer = memo(function AgentChatComposer({
           {allowThinking ? (
             <InlineHoverTooltip text="Select reasoning effort">
               <select
-                className="ui-input ui-control-important h-7 min-w-0 max-w-full rounded-md px-2 text-[11px] font-semibold text-foreground transition-all hover:border-primary/50"
+                className="ui-input ui-control-important h-7 min-w-0 max-w-full rounded-full border border-border/60 px-3 text-[11px] font-semibold text-foreground transition-all hover:border-primary/50"
                 aria-label="Thinking"
                 value={thinkingValue}
                 style={{ width: `${thinkingSelectWidthCh}ch`, maxWidth: "min(40vw, 16ch)" }}
@@ -1199,27 +1197,25 @@ const AgentChatComposer = memo(function AgentChatComposer({
             role="switch"
             aria-label="Show tool calls"
             aria-checked={toolCallingEnabled}
-            className={`inline-flex h-6 shrink-0 items-center rounded-sm border px-2 font-mono text-[9px] font-bold uppercase tracking-widest transition-all ${
+            className={`inline-flex h-6 shrink-0 items-center gap-1 rounded-full border px-2.5 font-mono text-[9px] font-bold uppercase tracking-widest transition-all ${
               toolCallingEnabled
-                ? "border-[#0f172a] bg-[#0f172a] text-white"
+                ? "border-foreground/80 bg-foreground text-background"
                 : "border-border bg-surface-2/50 text-muted-foreground hover:text-foreground"
             }`}
-
             onClick={() => onToolCallingToggle(!toolCallingEnabled)}
           >
-            Tools
+            Skills ↗
           </button>
           <button
             type="button"
             role="switch"
             aria-label="Show thinking"
             aria-checked={showThinkingTraces}
-            className={`inline-flex h-6 shrink-0 items-center rounded-sm border px-2 font-mono text-[9px] font-bold uppercase tracking-widest transition-all ${
+            className={`inline-flex h-6 shrink-0 items-center rounded-full border px-2.5 font-mono text-[9px] font-bold uppercase tracking-widest transition-all ${
               showThinkingTraces
-                ? "border-[#0f172a] bg-[#0f172a] text-white"
+                ? "border-foreground/80 bg-foreground text-background"
                 : "border-border bg-surface-2/50 text-muted-foreground hover:text-foreground"
             }`}
-
             onClick={() => onThinkingTracesToggle(!showThinkingTraces)}
           >
             Thinking
@@ -1249,7 +1245,6 @@ export const AgentChatPanel = ({
   onSend,
   onRemoveQueuedMessage,
   onStopRun,
-  onAvatarShuffle,
   onBackToFleet,
   pendingExecApprovals = [],
   onResolveExecApproval,
@@ -1603,9 +1598,9 @@ export const AgentChatPanel = ({
 
   return (
     <div data-agent-panel className="group fade-up relative flex h-full w-full min-w-0 flex-col overflow-hidden bg-background">
-      <header className="sticky top-0 z-30 border-b border-border/40 bg-background/80 px-5 py-2.5 backdrop-blur-xl sm:px-6 sm:py-3">
+      <header className="sticky top-0 z-30 border-b border-border/40 bg-background/90 px-3 py-2.5 backdrop-blur-xl sm:px-6 sm:py-3.5">
         <div className="flex items-center justify-between gap-4">
-          <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+          <div className="flex min-w-0 items-center gap-3">
             {onBackToFleet ? (
               <button
                 className="ui-btn-icon h-8 w-8 shrink-0 xl:!hidden"
@@ -1616,89 +1611,61 @@ export const AgentChatPanel = ({
                 <ChevronLeft className="h-4 w-4" />
               </button>
             ) : null}
-            <div className="group/avatar relative shrink-0">
-              <AgentAvatar
-                seed={avatarSeed}
-                name={agent.name}
-                avatarUrl={agent.avatarUrl ?? null}
-                size={40}
-                isSelected={isSelected}
-              />
-              <button
-                className="absolute -bottom-0.5 -right-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full border border-border/60 bg-surface-1/90 text-foreground opacity-0 shadow-sm backdrop-blur-sm transition-all group-hover/avatar:opacity-100 hover:scale-110 hover:bg-surface-1 active:scale-95"
-                type="button"
-                aria-label="Shuffle avatar"
-                data-testid="agent-avatar-shuffle"
-                onClick={(event) => {
-                  event.preventDefault();
-                  event.stopPropagation();
-                  onAvatarShuffle();
-                }}
-              >
-                <Shuffle className="h-2 w-2" />
-              </button>
-            </div>
 
             <div className="min-w-0 flex-1">
-              <div className="flex min-w-0 items-center gap-2">
-                <div className="min-w-0 flex-1">
-                  {renameEditing ? (
-                    <div ref={renameEditorRef} className="flex h-8 items-center gap-1.5">
-                      <input
-                        ref={renameInputRef}
-                        className="ui-input agent-rename-input h-7 min-w-0 flex-1 rounded-md px-2 text-[12px] font-semibold text-foreground"
-                        aria-label="Edit agent name"
-                        data-testid="agent-rename-input"
-                        value={renameDraft}
-                        disabled={renameSaving}
-                        onChange={(event) => {
-                          setRenameDraft(event.target.value);
-                          if (renameError) setRenameError(null);
-                        }}
-                        onKeyDown={handleRenameInputKeyDown}
-                      />
-                      <button
-                        className="ui-btn-icon h-7 w-7"
-                        type="button"
-                        aria-label="Save agent name"
-                        data-testid="agent-rename-save"
-                        onClick={() => {
-                          void submitRename();
-                        }}
-                        disabled={renameSaving}
-                      >
-                        <Check className="h-3 w-3" />
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex h-8 min-w-0 items-center gap-2">
-                      <div className="relative flex min-w-0 items-center gap-2">
-                        <h1 className="truncate font-sans text-lg font-semibold tracking-tight text-foreground sm:text-xl">
-                          {agent.name}
-                        </h1>
-                        {agent.status === "running" && (
-                          <span className="flex h-1.5 w-1.5">
-                            <span className="absolute inline-flex h-1.5 w-1.5 animate-ping rounded-full bg-emerald-500 opacity-75"></span>
-                            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-                          </span>
-                        )}
-                      </div>
-
-                      {onRename ? (
-                        <button
-                          className="ui-btn-icon h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
-                          type="button"
-                          aria-label="Rename agent"
-                          data-testid="agent-rename-toggle"
-                          onClick={beginRename}
-                        >
-                          <Pencil className="h-3 w-3" />
-                        </button>
-                      ) : null}
-                    </div>
-                  )}
+              {renameEditing ? (
+                <div ref={renameEditorRef} className="flex h-8 items-center gap-1.5">
+                  <input
+                    ref={renameInputRef}
+                    className="ui-input agent-rename-input h-7 min-w-0 flex-1 rounded-md px-2 text-[12px] font-semibold text-foreground"
+                    aria-label="Edit agent name"
+                    data-testid="agent-rename-input"
+                    value={renameDraft}
+                    disabled={renameSaving}
+                    onChange={(event) => {
+                      setRenameDraft(event.target.value);
+                      if (renameError) setRenameError(null);
+                    }}
+                    onKeyDown={handleRenameInputKeyDown}
+                  />
+                  <button
+                    className="ui-btn-icon h-7 w-7"
+                    type="button"
+                    aria-label="Save agent name"
+                    data-testid="agent-rename-save"
+                    onClick={() => { void submitRename(); }}
+                    disabled={renameSaving}
+                  >
+                    <Check className="h-3 w-3" />
+                  </button>
                 </div>
-              </div>
+              ) : (
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <h1 className="truncate font-display text-lg font-semibold tracking-tight text-foreground sm:text-xl">
+                    {agent.name}
+                  </h1>
+                  <span className="shrink-0 rounded-sm border border-border/60 bg-surface-2 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
+                    BETA
+                  </span>
+                  {agent.status === "running" && (
+                    <span className="flex h-1.5 w-1.5 shrink-0">
+                      <span className="absolute inline-flex h-1.5 w-1.5 animate-ping rounded-full bg-emerald-500 opacity-75" />
+                      <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                    </span>
+                  )}
+                  {onRename ? (
+                    <button
+                      className="ui-btn-icon h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
+                      type="button"
+                      aria-label="Rename agent"
+                      data-testid="agent-rename-toggle"
+                      onClick={beginRename}
+                    >
+                      <Pencil className="h-3 w-3" />
+                    </button>
+                  ) : null}
+                </div>
+              )}
               {renameError ? (
                 <div className="ui-text-danger mt-1 text-[11px]">{renameError}</div>
               ) : null}
@@ -1707,7 +1674,7 @@ export const AgentChatPanel = ({
 
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
             <button
-              className="ui-btn-icon h-8 w-8 md:hidden"
+              className="ui-btn-icon h-8 w-8 sm:hidden"
               type="button"
               aria-label="Expand transcript"
               title="Expand transcript"
@@ -1716,20 +1683,19 @@ export const AgentChatPanel = ({
               <Maximize2 className="h-4 w-4" />
             </button>
             <button
-              className="nodrag flex h-8 items-center justify-center rounded-md bg-foreground px-3.5 text-[11px] font-semibold tracking-tight text-background transition-all hover:opacity-90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+              className="nodrag flex h-8 items-center justify-center rounded-lg border border-border/50 bg-surface-2 px-2.5 sm:px-3.5 text-[11px] font-semibold tracking-tight text-foreground transition-all hover:bg-surface-3 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
               type="button"
               data-testid="agent-new-session-toggle"
               aria-label="Start new session"
               title="Start new session"
-              onClick={() => {
-                void handleNewSession();
-              }}
+              onClick={() => { void handleNewSession(); }}
               disabled={newSessionDisabled}
             >
-              <span>{newSessionBusy ? "..." : "New session"}</span>
+              <span className="hidden sm:inline">{newSessionBusy ? "…" : "New session"}</span>
+              <span className="sm:hidden">{newSessionBusy ? "…" : "New"}</span>
             </button>
             <button
-              className="nodrag ui-btn-icon h-8 w-8 border border-border/30 bg-surface-2/20"
+              className="nodrag ui-btn-icon h-8 w-8 rounded-lg border border-border/40 bg-surface-2/50"
               type="button"
               data-testid="agent-settings-toggle"
               aria-label="Open behavior"
@@ -1775,7 +1741,7 @@ export const AgentChatPanel = ({
           />
         </div>
 
-        <div className="relative z-20 mt-3">
+        <div className="relative z-20 mt-3 shrink-0">
           <AgentChatComposer
             value={draftValue}
             inputRef={handleDraftRef}
@@ -1808,7 +1774,7 @@ export const AgentChatPanel = ({
       </div>
 
       {transcriptModalOpen ? (
-        <div className="fixed inset-0 z-[130] flex min-h-0 flex-col bg-background md:hidden">
+        <div className="fixed inset-0 z-[130] flex min-h-0 flex-col bg-background sm:hidden">
           <div className="flex items-center justify-between border-b border-border/60 px-3 py-2">
             <div className="truncate text-sm font-medium text-foreground">{agent.name} · Transcript</div>
             <button

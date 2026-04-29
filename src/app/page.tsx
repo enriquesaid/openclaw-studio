@@ -1677,6 +1677,7 @@ const AgentStudioPage = () => {
                   onSelectAgent={handleFleetSelectAgent}
                   onCreateAgent={() => setCreateAgentModalOpen(true)}
                   onConnectionSettings={() => setShowConnectionPanel(true)}
+                  onAvatarShuffle={focusedAgent ? () => handleAvatarShuffle(focusedAgent.agentId) : undefined}
                   createDisabled={hasRestartBlockInProgress || hasDeleteMutationBlock}
                   createBusy={createAgentBusy}
                 />
@@ -1727,7 +1728,6 @@ const AgentStudioPage = () => {
                             focusedAgent.runId
                           )
                         }
-                        onAvatarShuffle={() => handleAvatarShuffle(focusedAgent.agentId)}
                         onBackToFleet={() => setMobilePane("fleet")}
                         pendingExecApprovals={focusedPendingExecApprovals}
                         onResolveExecApproval={(id, decision) => {
